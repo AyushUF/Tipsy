@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         billVal.becomeFirstResponder()
+        billVal.placeholder = String(format: "%.2f", defaults.double(forKey: "lastBill"))
         
         tipControl.selectedSegmentIndex = defaults.integer(forKey: "defTip")
         // Do any additional setup after loading the view, typically from a nib.
@@ -49,21 +50,27 @@ class ViewController: UIViewController {
         view.endEditing(true)
     }
     
+    
     @IBAction func calcTip(_ sender: AnyObject) {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = NSLocale.current
+        
         let tipVal = [ 0.15, 0.2, 0.25]
         
-        let bill = Double(billVal.text!) ?? 0
+        let bill = Double(billVal.text!) ?? defaults.double(forKey: "lastBill")
         let tip = bill * tipVal[tipControl.selectedSegmentIndex]
         let total = bill + tip
         
         
-        tipLabel.text = String(format: "$%.2f", tip)
-        totalLabel.text = String(format: "$%.2f", total)
-        by2Label.text = String(format: "$%.2f", total/2)
-        by3Label.text = String(format: "$%.2f", total/3)
-        by4Label.text = String(format: "$%.2f", total/4)
-        by5Label.text = String(format: "$%.2f", total/5)
+        tipLabel.text = formatter.string(from: (NSNumber:tip) as NSNumber)!
+        totalLabel.text = formatter.string(from: (NSNumber:total) as NSNumber)!
+        by2Label.text = formatter.string(from: (NSNumber:total/2) as NSNumber)!
+        by3Label.text = formatter.string(from: (NSNumber:total/3) as NSNumber)!
+        by4Label.text = formatter.string(from: (NSNumber:total/4) as NSNumber)!
+        by5Label.text = formatter.string(from: (NSNumber:total/5) as NSNumber)!
 
+        defaults.set(bill, forKey: "lastBill")
     }
 
 }
